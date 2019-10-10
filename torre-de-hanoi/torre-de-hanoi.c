@@ -79,23 +79,18 @@ int verifTransf(int*t, int d, int p){
 int verifResposta(int* t, int n){ // checar se a torre atual é equivalente a torre da resposta
     int i;
     int c = 0;
-    int r[20]; // array resposta de 20 elementos
-    int k = 20 - n; // posição k do array, onde está o valor 1
 
-    for (i = 19; i >= 0; i--){ // coloca os valores de 1 a n, a partir da posição k
+    for (i = 59; i >= 40; i--){ // coloca os valores de 1 a n, a partir da posição k
       if(n > 0){
-        r[i] = n;
+        if(t[i]==n){
         n--;
-      }else{
-          r[i] = 0;
+        c++;
+        }
+      }else if(t[i]==0){
+          c++;
         }
     }
 
-    for (i = 0; i < 20; i++){ // sempre que um elemento do array resposta for igual ao do array da torre 3, um contador é incrementado
-        if (r[i] == t[i + 40]){
-            c++;
-        }
-    }
     if (c == 20){ // se, para as 20 posições do array 3, tivermos 20 elementos iguais ao vetor resposta, então o jogador vence
         return 1;
     }
@@ -144,7 +139,7 @@ int main(){
     while (1){
         int x; // variável que guarda a quantidade de discos
         int ori, des, pec; // variáveis de torres, ori: torre de origem; des: torre de destino; pec: peça a mexer
-        int vd, vtz; // variáveis verificadoras, vd: verifica disco na torre; vtz: verifica torres zeradas
+        int vtz; // variáveis verificadoras, vd: verifica disco na torre; vtz: verifica torres zeradas
         int vt, vr = 0; // variáveis verificadoras, vt: verifica possib. de transferencia; vr: verifica resposta
         int counter = 0; // contador de rodadas
 
@@ -184,7 +179,7 @@ int main(){
                 scanf("%d", &des);
                 vt = verifTransf(torre, des, vtz); // verificar se o disco do topo da torre de destino é maior que o disco que se deseja transferir
                 if(vt == 0 || des > 3 || des <= 0){
-                    printf("Local de destino inválido\n");
+                    printf("Local de destino invalido\n");
                     goto Des;
                 }
 
@@ -209,7 +204,7 @@ int main(){
             break;
 
         case 3:
-          Rules: printf("\n\nA torre de Hanoi eh um jogo onde existem tres torres e n discos.\n"
+            printf("\n\nA torre de Hanoi eh um jogo onde existem tres torres e n discos.\n"
             "O objetivo do jogo eh mover todos os discos da primeira para a\n"
             "ultima torre, utilizando a restante como torre auxiliar, seguindo\n"
             "as seguintes regras:\n"

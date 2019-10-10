@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 int x, i, j;
+
+#define clear() printf("\033[H\033[J");
 
 int* criarTorre(int n){ // cria as tres torres em um array de 60 posições
     int i, c = 20 - n;
@@ -20,16 +23,62 @@ int* criarTorre(int n){ // cria as tres torres em um array de 60 posições
     return torre;
 }
 
-void printTorre(int* t, int n){
-    int i;
-    int c = 20 - n;
-
-    printf("\n\n");
-    for (i = c; i < 20; i++){
-        printf("| %d |   | %d |   | %d |\n", t[i], t[i + 20], t[i + 40]);
+void apres(char k[], int n){
+    if(strcmp(k, "\n")==0){
+        for(int i = 0; i < n; i++) putchar(45);
+        printf("\n");
+        return;
     }
-    printf("\n\n");
+    apres("\n", 125);
+    for(int i = 0; i < n; i++) putchar(45);
+    printf("%s", k);
+    apres("\n", n);
+    apres("\n", 125);
 }
+
+
+void printTorre(int* t, int n){
+    int grafica[23][125]; //matriz que contem as torres prontas
+    int i, j, aux, anel, c;
+    apres("\n", 125);
+    printf("\n\n");//utilizado para separar as linhas de texto da ilustração da torre
+
+    for (i = 0; i < 23; i++){ //inicia a matriz grafica "vazia"
+        for (j = 0; j < 125; j++){
+            if (j == 20 || j == 62 || j == 104){
+                grafica[i][j] = 124;
+            }else{
+                grafica[i][j] = 32;
+            }
+        }
+    }
+
+    for (i = 0; i < 60; i++){ //posiciona os aneis nas posições corretas
+      if(i < 20){
+        c = 0;
+      }else if(i<40){
+        c = 1;
+      }else{
+        c = 2;
+      }
+      if(t[i] != 0){
+          anel = t[i];
+              for (; anel > 0; anel--){
+                  grafica[i + 3 - c* 20][20+ c*42] = 35;
+                  grafica[i + 3 - c* 20][20+ c*42 + anel] = 35; //i+3 pois a matriz grafica possui 23 linhas e a matriz representacao possui 20
+                  grafica[i + 3 - c* 20][20+ c*42- anel] = 35;
+              }
+      }}
+
+	for (i = 20 - n; i < 23; i++){ //imprime o resultado final
+        for (j = 0; j < 125; j++){
+            printf("%c", grafica[i][j]);
+        }
+        printf("\n");
+	}
+	printf("\n\n");
+}
+
 
 int verifTorreZerada(int* t, int o){
   if (t[o*20 - 1] != 0){ // se o último disco for não-nulo, então a torre é não-nula
@@ -44,22 +93,6 @@ int verifTorreZerada(int* t, int o){
   }
 }
 
-int verifDisco(int* t, int o, int pec){ // verifica a presença do disco na torre e se ele pode se mexer
-  int i;
-  for(i = (o-1) * 20; i < 20 * o; i++){
-    if (t[i] == pec){
-      if (t[i-1] == 0 || i == 0){ // se a posição anterior aquele disco for 0, ou se o disco está no topo da torre, ele pode se mexer
-          return 1;
-      }
-      else{
-          return 0;
-      }
-    }
-  }
-  if (t[i] != pec){
-      return 0;
-  }
-}
 
 int verifTransf(int*t, int d, int p){
   int i;
@@ -117,7 +150,6 @@ void move(int ori, int des, int* t, int m){ // movendo o disco do topo da torre 
       }
   }
 
-    printf("-----------------------------");
     printTorre(t, m);
 }
 
@@ -132,13 +164,13 @@ void auto_hanoi(int n, int m, int ori, int des, int aux, int* tor){ // função 
 }
 
 int main(){
-    printf("------------------------------\n");
-    printf("--------TORRES DE HANOI-------\n");
-    printf("------------------------------\n\n");
+    
 
     while (1){
+        apres("TORRES DE HANOI", 55);
+        printf("\n");
         int x; // variável que guarda a quantidade de discos
-        int ori, des, pec; // variáveis de torres, ori: torre de origem; des: torre de destino; pec: peça a mexer
+        int ori, des; // variáveis de torres, ori: torre de origem; des: torre de destino; pec: peça a mexer
         int vtz; // variáveis verificadoras, vd: verifica disco na torre; vtz: verifica torres zeradas
         int vt, vr = 0; // variáveis verificadoras, vt: verifica possib. de transferencia; vr: verifica resposta
         int counter = 0; // contador de rodadas
@@ -160,11 +192,11 @@ int main(){
 
         switch(menu){
         case 1:
+            
             printTorre(torre, x);
 
             while(vr == 0){ // enquanto a verificadora de resposta retornar 0, o jogador continua jogando
                 counter++; // contador de rodadas
-                printf("-----------------------------\n\n");
                 printf("Rodada %d\n\n", counter);
 
                 OriTorre: printf("Qual a torre de origem? "); // usuário informa a torre de origem
@@ -188,26 +220,29 @@ int main(){
                 vr = verifResposta(torre, x); // verificar a resposta
             }
 
-            printf("------------------------------\n"
-            "------------PARABENS----------\n"
-            "------------------------------\n\n"
-            "Torres de hanoi com %d discos, completados em %d rodadas.\n", x, counter);
-            printf("------------------------------\n\n");
+            apres("PARABENS, VOCE GANHOU", 52);
+            printf("Torres de hanoi com %d discos, completados em %d rodadas.\n", x, counter);
+            getchar();
+            getchar();
+            clear();
+
             break;
 
         case 2:
+            getchar();
             printTorre(torre, x);
             auto_hanoi(x, x, 1, 3, 2, torre);
 
             printf("Torres de hanoi com %d discos, completados em %.lf rodadas.\n", x, pow(2, x) - 1);
-            printf("------------------------------\n\n");
+            
+            
+            getchar();
+            clear();
             break;
 
         case 3:
-            printf("\n\nA torre de Hanoi eh um jogo onde existem tres torres e n discos.\n"
-            "O objetivo do jogo eh mover todos os discos da primeira para a\n"
-            "ultima torre, utilizando a restante como torre auxiliar, seguindo\n"
-            "as seguintes regras:\n"
+            printf("\n\nA torre de Hanoi eh um jogo onde existem tres torres e n discos.\nO objetivo do jogo eh mover todos os discos da primeira para a\n"
+            "ultima torre, utilizando a restante como torre auxiliar, seguindo as seguintes regras:\n"
             "   1. Apenas um disco pode ser movido de cada vez.\n"
             "   2. Cada movimento consiste de tirar o disco do topo\n"
             "      de uma das torres e posiciona-lo no topo de outra\n"

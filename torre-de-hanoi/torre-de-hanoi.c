@@ -54,13 +54,7 @@ void printTorre(int* t, int n){
     }
 
     for (i = 0; i < 60; i++){ //posiciona os aneis nas posições corretas
-      if(i < 20){
-        c = 0;
-      }else if(i<40){
-        c = 1;
-      }else{
-        c = 2;
-      }
+        c = i/20;
       if(t[i] != 0){
           anel = t[i];
               for (; anel > 0; anel--){
@@ -164,7 +158,7 @@ void auto_hanoi(int n, int m, int ori, int des, int aux, int* tor){ // função 
 }
 
 int main(){
-    
+
 
     while (1){
         apres("TORRES DE HANOI", 55);
@@ -192,7 +186,7 @@ int main(){
 
         switch(menu){
         case 1:
-            
+
             printTorre(torre, x);
 
             while(vr == 0){ // enquanto a verificadora de resposta retornar 0, o jogador continua jogando
@@ -234,8 +228,8 @@ int main(){
             auto_hanoi(x, x, 1, 3, 2, torre);
 
             printf("Torres de hanoi com %d discos, completados em %.lf rodadas.\n", x, pow(2, x) - 1);
-            
-            
+
+
             getchar();
             clear();
             break;

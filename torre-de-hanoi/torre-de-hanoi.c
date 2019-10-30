@@ -2,9 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-
-
-// Objetivo -> Mudar o esquema para matrizes
+#define TORRE1 20
+#define TORRE2 62
+#define TORRE3 104
 
 int x, i, j;
 
@@ -27,14 +27,61 @@ int* criarTorre(int n){ // cria as tres torres em um array de 60 posi��es
 
 // Imprime a torre
 void printTorre(int* t, int n){
-    int i;
-    int c = 20 - n;
+    int grafica[23][125]; //matriz que contem as torres prontas
+    int i, j, aux, anel;
 
-    printf("\n\n");
-    for (i = c; i < 20; i++){
-        printf("| %d |   | %d |   | %d |\n", t[i], t[i + 20], t[i + 40]);
+    printf("-----------------------------\n\n");;//utilizado para separar as linhas de texto da ilustração da torre
+
+    for (i = 0; i < 23; i++){ //inicia a matriz grafica "vazia"
+        for (j = 0; j < 125; j++){
+            if (j == TORRE1 || j == TORRE2 || j == TORRE3){
+                grafica[i][j] = 124;
+            }else{
+                grafica[i][j] = 32;
+            }
+        }
     }
-    printf("\n\n");
+
+    for (i = 0; i < 60; i++){ //posiciona os aneis nas posições corretas
+        j = i/20;
+      if(t[i] != 0){
+          anel = t[i];
+              switch (j){
+
+                case 0:
+                    for (; anel > 0; anel--){
+                        grafica[i + 3][TORRE1] = 35;
+                        grafica[i + 3][TORRE1 + anel] = 35; //i+3 pois a matriz grafica possui 23 linhas e a matriz representacao possui 20
+                        grafica[i + 3][TORRE1 - anel] = 35;
+                    }
+                break;
+
+                case 1:
+                    for (; anel > 0; anel--){
+                        grafica[i + 3 - 20][TORRE2] = 35;
+                        grafica[i + 3 - 20][TORRE2 + anel] = 35;
+                        grafica[i + 3 - 20][TORRE2 - anel] = 35;
+                    }
+                break;
+
+                case 2:
+                    for (; anel > 0; anel--){
+                        grafica[i + 3 - 40][TORRE3] = 35;
+                        grafica[i + 3 - 40][TORRE3 + anel] = 35;
+                        grafica[i + 3 - 40][TORRE3 - anel] = 35;
+                    }
+                break;
+                }
+      }
+    }
+
+	for (i = 20 - n; i < 23; i++){ //imprime o resultado final
+        for (j = 0; j < 125; j++){
+            printf("%c", grafica[i][j]);
+        }
+        printf("\n");
+	}
+	printf("-----------------------------\n\n");
 }
 
 // Verifica se a torre foi zerada
@@ -224,7 +271,7 @@ int* moverDiscos(int *t, int d, int p, int o){
 // Vê se a torre atual no jogo equivale à resposta. Se for o jogo termina
 int verifResposta(int* t, int n){
     int i;
-    int c;
+    int c = 0;
     int r[20]; // array resposta de 20 elementos
     int k = 20 - n; // posi��o k do array, onde est� o valor 1
 
@@ -348,11 +395,7 @@ void move(char ori, char des, int* t, int m){
         }
     }
 
-    printf("-----------------------------\n\n");
-    for (i = c; i < 20; i++){
-        printf("| %d |   | %d |   | %d |\n", t[i], t[i + 20], t[i + 40]);
-    }
-    printf("\n\n");
+    printTorre(t, m);
 }
 
 // Função que resolve o jogo sozinha a partir da recursão
@@ -408,12 +451,7 @@ void hanoiSolve()
     c = 20 - numDiscos;
     int* torre_auto = criarTorre(numDiscos);
 
-    printf("\n\n");
-    printf("-----------------------------\n\n");
-    for (i = c; i < 20; i++){
-        printf("| %d |   | %d |   | %d |\n", torre_auto[i], torre_auto[i + 20], torre_auto[i + 40]);
-    }
-    printf("\n\n");
+    printTorre(torre_auto, m);
 
     auto_hanoi(numDiscos, m, 'A', 'C', 'B', torre_auto);
 
@@ -448,7 +486,6 @@ void hanoiPlay()
     while(verificaResposta == 0){
         rodadas++;
 
-        printf("-----------------------------\n\n");
         printf("Rodada %d\n\n", rodadas);
 
         printf("Qual a torre de origem? ");
@@ -482,7 +519,7 @@ void hanoiPlay()
 
         verificaTransferencia = verifTransf(torrePrincipal, torreDestino, torreDisco); // verificar se o disco do topo da torre de destino � maior que o disco que se deseja transferir
         
-        while(verificaTransferencia == 0){
+        while(verificaTransferencia == 0 || torreDestino > 3){
             printf("Impossivel colocar disco maior acima de menor\n");
             printf("Qual a torre de destino? ");
             scanf("%d", &torreDestino);
